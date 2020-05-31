@@ -1,0 +1,64 @@
+/// <reference types="aws-sdk" />
+import {Component, OnInit} from '@angular/core';
+import * as nodemailer from '../../../../node_modules/nodemailer/';
+import {NgForm} from "@angular/forms";
+
+
+@Component({
+  selector: 'app-email-home',
+  templateUrl: './email-home.component.html',
+  styleUrls: ['./email-home.component.scss']
+})
+
+export class EmailHomeComponent implements OnInit {
+
+  constructor() {
+  }
+
+  onSubmit() {
+    Email.send({
+      Host: 'eskimo.dima.hu',
+      Username: 'smtp_username',
+      Password: 'smtp_password',
+      To: 'nyitraibalazs@weboldalnet.hu.com',
+      From: 'info@teszt.hu',
+      Subject: 'Mentés',
+      Body: `
+<i>This is sent as a feedback from my resume page.</i> <br/> <b>Name: </b><br /> <b>Email: </b><br /> <b>Subject: </b><br /> <b>Message:</b> <br /> <br><br> <b>~End of Message.~</b> `
+    });
+
+  }
+
+  ngOnInit() {
+
+  }
+}
+
+
+var Email = {
+  send: function (a) {
+    return new Promise(function (n, e) {
+      a.nocache = Math.floor(1e6 * Math.random() + 1), a.Action = "Send";
+      var t = JSON.stringify(a);
+      Email.ajaxPost("https://smtpjs.com/v3/smtpjs.aspx?", t, function (e) {
+        n(e)
+      })
+    })
+  }, ajaxPost: function (e, n, t) {
+    var a = Email.createCORSRequest("POST", e);
+    a.setRequestHeader("Content-type", "application/x-www-form-urlencoded"), a.onload = function () {
+      var e = a.responseText;
+      null != t && t(e)
+    }, a.send(n)
+  }, ajax: function (e, n) {
+    var t = Email.createCORSRequest("GET", e);
+    t.onload = function () {
+      var e = t.responseText;
+      null != n && n(e)
+    }, t.send()
+  }, createCORSRequest: function (e, n) {
+    var t = new XMLHttpRequest;
+    let XDomainRequest;
+    return "withCredentials" in t ? t.open(e, n, !0) : "undefined" != typeof XDomainRequest ? (t = new XDomainRequest).open(e, n) : t = null, t
+  }
+};
